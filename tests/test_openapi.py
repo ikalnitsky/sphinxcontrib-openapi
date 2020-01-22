@@ -1487,6 +1487,90 @@ class TestOpenApi3HttpDomain(object):
 
         ''').lstrip()
 
+    def test_oneOf_requestBody(self):
+        text = '\n'.join(openapi30.openapihttpdomain({
+            'openapi': '3.0.0.',
+            'paths': {
+                '/testpath': {
+                    'post': {
+                        'summary': 'a test POST',
+                        'description': 'N/A',
+                        'parameters': [],
+                        'requestBody': {
+                            'content': {
+                                'application/json': {
+                                    'schema': {
+                                        'oneOf': [
+                                            {'description': 'request body 1',
+                                             'type': 'object',
+                                             'properties': {
+                                                'A': {
+                                                    'type': 'string'
+                                                },
+                                              }
+                                             },
+                                            {'description': 'request body 2',
+                                             'type': 'object',
+                                             'properties': {
+                                                'B': {
+                                                    'type': 'string'
+                                                },
+                                              }
+                                             }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        'responses': {
+                            '202': {
+                                'description': 'created',
+                                'content': {
+                                    'application/json': {
+                                        'example': '{"foo": "bar"}'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }, request=True))
+        assert text == textwrap.dedent('''
+            .. http:post:: /testpath
+               :synopsis: a test POST
+
+               **a test POST**
+
+               N/A
+
+
+               The request accepts the following bodies:
+
+               **Request body:**
+
+               .. sourcecode:: json
+
+                  {
+                    "A":{
+                      "type":"string"
+                    }
+                  }
+
+               **Request body:**
+
+               .. sourcecode:: json
+
+                  {
+                    "B":{
+                      "type":"string"
+                    }
+                  }
+
+               :status 202:
+                  created
+        ''').lstrip()
+
 
 class TestResolveRefs(object):
 

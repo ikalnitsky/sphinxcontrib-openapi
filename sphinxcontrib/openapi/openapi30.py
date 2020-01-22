@@ -283,19 +283,31 @@ def _httpresource(endpoint, method, properties, convert, render_examples,
 
     # print request content
     if render_request:
+        yield ''
         request_content = properties.get('requestBody', {}).get('content', {})
         if request_content and 'application/json' in request_content:
             schema = request_content['application/json']['schema']
-            req_properties = json.dumps(schema['properties'], indent=2,
-                                        separators=(',', ':'))
-            yield '{indent}**Request body:**'.format(**locals())
-            yield ''
-            yield '{indent}.. sourcecode:: json'.format(**locals())
-            yield ''
-            for line in req_properties.splitlines():
-                # yield indent + line
-                yield '{indent}{indent}{line}'.format(**locals())
-                # yield ''
+            schs = []
+            if 'oneOf' in schema:
+                schs = schema['oneOf']
+            else:
+                schs = [schema]
+            if len(schs) > 1:
+                yield ('{indent}The request accepts '
+                       'the following bodies:'.format(**locals()))
+                yield ''
+            for sch in schs:
+                req_properties = json.dumps(sch['properties'], indent=2,
+                                            separators=(',', ':'))
+                yield '{indent}**Request body:**'.format(**locals())
+                yield ''
+                yield '{indent}.. sourcecode:: json'.format(**locals())
+                yield ''
+                for line in req_properties.splitlines():
+                    # yield indent + line
+                    yield '{indent}{indent}{line}'.format(**locals())
+                    # yield ''
+                yield ''
 
     # print request example
     if render_examples:

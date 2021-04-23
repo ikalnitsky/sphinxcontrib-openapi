@@ -130,6 +130,14 @@ taking precedence over ``include`` and ``paths``)
 
   Would render the ``head`` method, followed by the ``get`` method, followed by the rest of the methods in their declared ordered.
 
+``openapi_default_renderer``
+  A string to select the renderer.
+
+  Currently has two options:
+
+    * ``httpdomain:old`` Old HTTP renderer. Well tested but lacks support for JSON schemas. Default.
+    * ``httpdomain`` New renderer with support for JSON schemas but not as well tested.
+
 
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _OpenAPI: https://github.com/OAI/OpenAPI-Specification
